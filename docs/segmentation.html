@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2D2D2D" />
+  
+  <title>3D Gaussian Splatting for Plant Reconstruction :: Masking</title>
+  
+
+  <link rel="icon" type="image/png" sizes="32x32" href="_static/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="_static/img/favicon-16x16.png">
+  <link rel="index" title="Index" href="genindex.html"/>
+
+  <link rel="stylesheet" href="_static/css/insegel.css"/>
+  <link rel="stylesheet" href="_static/css/custom.css"/>
+
+  <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript" src="_static/documentation_options.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/sphinx_highlight.js"></script>
+      <script type="text/javascript" src="_static/clipboard.min.js"></script>
+      <script type="text/javascript" src="_static/copybutton.js"></script>
+  
+
+  <script src="https://email.tl.fortawesome.com/c/eJxNjUEOgyAQAF8jR7Kw6wIHDh7sP1Cw2mgxgmn6-3JsMqc5zEQfE8dkxOY1KKMUOI3ACFKRJpSW2AAp7ontYIaxI6i7XPJVwyeVfCQ550Os3jLrGSNOLgbdAy6s0PBk2TFNjEbsfq31LB0OnX407pJa5v2faRadwSW63mn5KuLyR9j2tgx3zecanl-55R_-jjPs"></script>
+   
+
+</head>
+
+<body>
+  <div id="insegel-container">
+    <header>
+      <div id="logo-container">
+          
+          <h1>3D Gaussian Splatting for Plant Reconstruction</h1>
+          
+      </div>
+      <div id="project-container">
+        
+        <h1>Documentation</h1>
+        
+      </div>
+    </header>
+
+    <div id="content-container">
+
+      <div id="main-content-container">
+        <div id="main-content" role="main">
+          
+  <section id="masking">
+<h1>Masking<a class="headerlink" href="#masking" title="Link to this heading">¶</a></h1>
+<p>To separate the plant object from the background scene, we utilize segmentation to automatatically detect the plant and create a corresponding binary mask for each image.</p>
+<section id="installing-language-segment-anything">
+<h2>Installing Language Segment-Anything<a class="headerlink" href="#installing-language-segment-anything" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://github.com/luca-medeiros/lang-segment-anything">Language Segment-Anything</a> is an open-source package used for object detection and image segmentation. The model utilizes Meta’s <a class="reference external" href="https://github.com/facebookresearch/sam2">Segment Anything Model 2</a> for instance segmentation and <a class="reference external" href="https://github.com/IDEA-Research/GroundingDINO">Grounding DINO</a>’s open-set detection model.</p>
+<p>To install the Language Segment-Anything model, create a new Conda environment.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="n">lang_sam</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.10</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">activate</span> <span class="n">lang_sam</span>
+</pre></div>
+</div>
+<p>Install the dependencies, and then the Language Segment-Anything package.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">torch</span><span class="o">==</span><span class="mf">2.4.1</span> <span class="n">torchvision</span><span class="o">==</span><span class="mf">0.19.1</span> <span class="o">--</span><span class="n">extra</span><span class="o">-</span><span class="n">index</span><span class="o">-</span><span class="n">url</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">download</span><span class="o">.</span><span class="n">pytorch</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">whl</span><span class="o">/</span><span class="n">cu124</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">U</span> <span class="n">git</span><span class="o">+</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">luca</span><span class="o">-</span><span class="n">medeiros</span><span class="o">/</span><span class="n">lang</span><span class="o">-</span><span class="n">segment</span><span class="o">-</span><span class="n">anything</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+</section>
+<section id="masking-the-images">
+<h2>Masking the Images<a class="headerlink" href="#masking-the-images" title="Link to this heading">¶</a></h2>
+<p>Change directory into the <code class="docutils literal notranslate"><span class="pre">plant</span></code> folder, and run the <code class="docutils literal notranslate"><span class="pre">create_mask.py</span></code> script.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/&lt;</span><span class="n">user</span><span class="o">&gt;/</span><span class="n">nerfstudio</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">plant</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">/</span><span class="n">home</span><span class="o">/&lt;</span><span class="n">user</span><span class="o">&gt;/</span><span class="n">nerfstudio</span><span class="o">/</span><span class="n">nerfstudio</span><span class="o">/</span><span class="n">scripts</span><span class="o">/</span><span class="n">datasets</span><span class="o">/</span><span class="n">create_mask</span><span class="o">.</span><span class="n">py</span>
+</pre></div>
+</div>
+<p>Masks have been generated for each image, as well as downscaled versions. These masks can be found in the <code class="docutils literal notranslate"><span class="pre">masks</span></code>, <code class="docutils literal notranslate"><span class="pre">masks_2</span></code>, <code class="docutils literal notranslate"><span class="pre">masks_4</span></code>, and <code class="docutils literal notranslate"><span class="pre">masks_8</span></code> folders.</p>
+<p>After running the masking script, the folder structure should now look as such:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>📂.../ 
+├──📂nerfstudio/ 
+│   ├──📂data/
+│   │	├──📂plant/
+│   │	│	├──📂source/
+│   │	│	│	├── 🖼️ &lt;raw image 0&gt;
+│   │	│	│	├── 🖼️ &lt;raw image 1&gt;
+│   │	│	│	│...
+│   │	│	├──📂colmap/
+│   │	│	├──📂images/
+│   │	│	├──📂images_2/
+│   │	│	├──📂images_4/
+│   │	│	├──📂images_8/
+│   │	│	├──📂masks/
+│   │	│	│	├── 🖼️ &lt;binary mask 0&gt;
+│   │	│	│	├── 🖼️ &lt;binary mask 1&gt;
+│   │	│	│	│...
+│   │	│	├──📂masks_2/
+│   │	│	├──📂masks_4/
+│   │	│	├──📂masks_8/
+│   │	│	├──📄 sparse_pc.ply
+│   │	│	├──📄 transforms.json
+│   │   │...
+│   │...
+│...
+</pre></div>
+</div>
+<p>Here is an example of a raw image of the plant, and its corresponding binary mask:</p>
+<div style="display: flex; justify-content: center; gap: 10px;">
+  <div style="text-align: center;">
+    <p>Image before segmentation:</p>
+    <img src="images/beforeseg.jpeg" alt="Image of plant." width="250"/>
+  </div>
+  <div style="text-align: center;">
+    <p>Image after segmentation:</p>
+    <img src="images/afterseg.png" alt="Binary mask of plant." width="250"/>
+  </div>
+</div>
+<p>A foreground pixel receives a value of 1 (white), and a background pixel receives a value of 0 (black).</p>
+</section>
+</section>
+
+
+        </div>
+      </div>
+
+      <div id="side-menu-container">
+
+        <div id="search" role="search">
+        <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+            <input type="text" name="q" placeholder="Search..." />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+        </form>
+</div>
+
+        <div id="side-menu" role="navigation">
+
+          
+  
+    
+  
+  
+    <p class="caption" role="heading"><span class="caption-text">Navigation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#what-is-3d-gaussian-splatting">What is 3D Gaussian Splatting?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#dgs-pipeline-overview">3DGS Pipeline (Overview)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#hardware">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#installing-nerfstudio">Installing Nerfstudio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#data-preparation">Data Preparation</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Masking</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installing-language-segment-anything">Installing Language Segment-Anything</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#masking-the-images">Masking the Images</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="training.html">Training</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="training.html#nerfstudio-viewer">Nerfstudio Viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html#output">Output</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rendering.html">Rendering the model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html#export-the-gaussians">Export the Gaussians</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html#rendering-in-unity">Rendering in Unity</a></li>
+</ul>
+</li>
+</ul>
+
+  
+
+
+        </div>
+
+        
+
+      </div>
+
+    </div>
+
+<footer>
+    <div id="footer-info">
+        <ul id="build-details">
+            
+                <li class="footer-element">
+                    
+                        <a href="_sources/segmentation.md.txt" rel="nofollow"> source</a>
+                    
+                </li>
+            
+
+            
+
+            
+        </ul>
+
+        
+
+        <div id="credit">
+            created with <a href="http://sphinx-doc.org/">Sphinx</a> and <a href="https://github.com/Autophagy/insegel">Insegel</a>
+
+        </div>
+    </div>
+
+    <a id="menu-toggle" class="fa fa-bars" aria-hidden="true"></a>
+
+    <script type="text/javascript">
+      $("#menu-toggle").click(function() {
+        $("#menu-toggle").toggleClass("toggled");
+        $("#side-menu-container").slideToggle(300);
+      });
+    </script>
+
+</footer> 
+
+</div>
+
+</body>
+</html>

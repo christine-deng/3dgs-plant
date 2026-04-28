@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2D2D2D" />
+  
+  <title>3D Gaussian Splatting for Plant Reconstruction :: Introduction</title>
+  
+
+  <link rel="icon" type="image/png" sizes="32x32" href="_static/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="_static/img/favicon-16x16.png">
+  <link rel="index" title="Index" href="genindex.html"/>
+
+  <link rel="stylesheet" href="_static/css/insegel.css"/>
+  <link rel="stylesheet" href="_static/css/custom.css"/>
+
+  <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript" src="_static/documentation_options.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/sphinx_highlight.js"></script>
+      <script type="text/javascript" src="_static/clipboard.min.js"></script>
+      <script type="text/javascript" src="_static/copybutton.js"></script>
+  
+
+  <script src="https://email.tl.fortawesome.com/c/eJxNjUEOgyAQAF8jR7Kw6wIHDh7sP1Cw2mgxgmn6-3JsMqc5zEQfE8dkxOY1KKMUOI3ACFKRJpSW2AAp7ontYIaxI6i7XPJVwyeVfCQ550Os3jLrGSNOLgbdAy6s0PBk2TFNjEbsfq31LB0OnX407pJa5v2faRadwSW63mn5KuLyR9j2tgx3zecanl-55R_-jjPs"></script>
+   
+
+</head>
+
+<body>
+  <div id="insegel-container">
+    <header>
+      <div id="logo-container">
+          
+          <h1>3D Gaussian Splatting for Plant Reconstruction</h1>
+          
+      </div>
+      <div id="project-container">
+        
+        <h1>Documentation</h1>
+        
+      </div>
+    </header>
+
+    <div id="content-container">
+
+      <div id="main-content-container">
+        <div id="main-content" role="main">
+          
+  <section id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Link to this heading">¶</a></h1>
+<p>This project was supported by Brookhaven National Laboratory under the Supplemental Undergraduate Research Program (SURP) for the Spring 2026 term. Under my mentor Dr. Wei Xu’s guidance, I explore adapting current 3D Gaussian Splatting practices to reconstruct isolated objects, rather than full scenes. In particular, we examine reconstructing a sorghum plant.</p>
+<p>The project repository can be found on my <a class="reference external" href="https://github.com/christine-deng/nerfstudio">GitHub</a>. This documentation site is based on fellow intern Jasmin Lin’s <a class="reference external" href="https://lajazz23.github.io/3dgs-vr-unity-plants/intro.html">documentation</a> on a similar project.</p>
+<p align="center">
+  <img src="images/model.gif" alt="Final rendered model in Unity.">
+</p>
+<section id="what-is-3d-gaussian-splatting">
+<h2>What is 3D Gaussian Splatting?<a class="headerlink" href="#what-is-3d-gaussian-splatting" title="Link to this heading">¶</a></h2>
+<p><a class="reference external" href="https://repo-sam.inria.fr/fungraph/3d-gaussian-splatting/">3D Gaussian Splatting</a> (3DGS) is a technique that transforms multi-view images into a 3D representation with real-time rendering. This approach offers accurate geometry representation through a collection of 3D Gaussians with ellipsoid shapes, containing position, size, color, and opacity attributes.</p>
+</section>
+<section id="dgs-pipeline-overview">
+<h2>3DGS Pipeline (Overview)<a class="headerlink" href="#dgs-pipeline-overview" title="Link to this heading">¶</a></h2>
+<p>This pipeline reconstructs a 3D object-centric representation of a plant from multi-view images using 3DGS, enabling real-time rendering in Unity Engine.</p>
+<p>The pipeline consists of four stages:</p>
+<ol class="arabic simple">
+<li><p>Reconstruction — Camera poses and a sparse point cloud are extracted from multi-view images to initialize the 3DGS model. See <a class="reference external" href="https://christine-deng.github.io/3dgs-plant/setup.html">Setup</a> for details.</p></li>
+<li><p>Segmentation — Binary foreground masks are generated to isolate the plant from the background. See <a class="reference external" href="https://christine-deng.github.io/3dgs-plant/segmentation.html">Segmentation</a> for details.</p></li>
+<li><p>Training — The 3DGS model is trained with the segmentation masks, removing background Gaussians and producing a clean object-centric reconstruction. See <a class="reference external" href="https://christine-deng.github.io/3dgs-plant/training.html">Training</a> for details.</p></li>
+<li><p>Rendering — The trained Gaussian model is exported and rendered in Unity Engine for real-time interactive viewing. See <a class="reference external" href="https://christine-deng.github.io/3dgs-plant/rendering.html">Rendering</a> for details.</p></li>
+</ol>
+<p align="center">
+  <img src="images/pipeline.png" alt="Pipeline of project.">
+</p></section>
+</section>
+
+
+        </div>
+      </div>
+
+      <div id="side-menu-container">
+
+        <div id="search" role="search">
+        <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+            <input type="text" name="q" placeholder="Search..." />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+        </form>
+</div>
+
+        <div id="side-menu" role="navigation">
+
+          
+  
+    
+  
+  
+    <p class="caption" role="heading"><span class="caption-text">Navigation:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#what-is-3d-gaussian-splatting">What is 3D Gaussian Splatting?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dgs-pipeline-overview">3DGS Pipeline (Overview)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#hardware">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#installing-nerfstudio">Installing Nerfstudio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#data-preparation">Data Preparation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="segmentation.html">Masking</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="segmentation.html#installing-language-segment-anything">Installing Language Segment-Anything</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentation.html#masking-the-images">Masking the Images</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="training.html">Training</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="training.html#nerfstudio-viewer">Nerfstudio Viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html#output">Output</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rendering.html">Rendering the model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html#export-the-gaussians">Export the Gaussians</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html#rendering-in-unity">Rendering in Unity</a></li>
+</ul>
+</li>
+</ul>
+
+  
+
+
+        </div>
+
+        
+
+      </div>
+
+    </div>
+
+<footer>
+    <div id="footer-info">
+        <ul id="build-details">
+            
+                <li class="footer-element">
+                    
+                        <a href="_sources/intro.md.txt" rel="nofollow"> source</a>
+                    
+                </li>
+            
+
+            
+
+            
+        </ul>
+
+        
+
+        <div id="credit">
+            created with <a href="http://sphinx-doc.org/">Sphinx</a> and <a href="https://github.com/Autophagy/insegel">Insegel</a>
+
+        </div>
+    </div>
+
+    <a id="menu-toggle" class="fa fa-bars" aria-hidden="true"></a>
+
+    <script type="text/javascript">
+      $("#menu-toggle").click(function() {
+        $("#menu-toggle").toggleClass("toggled");
+        $("#side-menu-container").slideToggle(300);
+      });
+    </script>
+
+</footer> 
+
+</div>
+
+</body>
+</html>

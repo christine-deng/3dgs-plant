@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2D2D2D" />
+  
+  <title>3D Gaussian Splatting for Plant Reconstruction :: Rendering the model</title>
+  
+
+  <link rel="icon" type="image/png" sizes="32x32" href="_static/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="_static/img/favicon-16x16.png">
+  <link rel="index" title="Index" href="genindex.html"/>
+
+  <link rel="stylesheet" href="_static/css/insegel.css"/>
+  <link rel="stylesheet" href="_static/css/custom.css"/>
+
+  <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript" src="_static/documentation_options.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/sphinx_highlight.js"></script>
+      <script type="text/javascript" src="_static/clipboard.min.js"></script>
+      <script type="text/javascript" src="_static/copybutton.js"></script>
+  
+
+  <script src="https://email.tl.fortawesome.com/c/eJxNjUEOgyAQAF8jR7Kw6wIHDh7sP1Cw2mgxgmn6-3JsMqc5zEQfE8dkxOY1KKMUOI3ACFKRJpSW2AAp7ontYIaxI6i7XPJVwyeVfCQ550Os3jLrGSNOLgbdAy6s0PBk2TFNjEbsfq31LB0OnX407pJa5v2faRadwSW63mn5KuLyR9j2tgx3zecanl-55R_-jjPs"></script>
+   
+
+</head>
+
+<body>
+  <div id="insegel-container">
+    <header>
+      <div id="logo-container">
+          
+          <h1>3D Gaussian Splatting for Plant Reconstruction</h1>
+          
+      </div>
+      <div id="project-container">
+        
+        <h1>Documentation</h1>
+        
+      </div>
+    </header>
+
+    <div id="content-container">
+
+      <div id="main-content-container">
+        <div id="main-content" role="main">
+          
+  <section id="rendering-the-model">
+<h1>Rendering the model<a class="headerlink" href="#rendering-the-model" title="Link to this heading">¶</a></h1>
+<section id="export-the-gaussians">
+<h2>Export the Gaussians<a class="headerlink" href="#export-the-gaussians" title="Link to this heading">¶</a></h2>
+<p>After training the Gaussians, export the model using Nerfstudio’s built-in command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ns</span><span class="o">-</span><span class="n">export</span> <span class="n">gaussian</span><span class="o">-</span><span class="n">splat</span> \
+  <span class="o">--</span><span class="n">load</span><span class="o">-</span><span class="n">config</span> <span class="o">/</span><span class="n">home</span><span class="o">/&lt;</span><span class="n">user</span><span class="o">&gt;/</span><span class="n">nerfstudio</span><span class="o">/</span><span class="n">outputs</span><span class="o">/</span><span class="n">plant</span><span class="o">/</span><span class="n">splatfacto</span><span class="o">/&lt;</span><span class="n">timestamp</span><span class="o">&gt;/</span><span class="n">config</span><span class="o">.</span><span class="n">yml</span> \
+  <span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="nb">dir</span> <span class="o">/</span><span class="n">home</span><span class="o">/&lt;</span><span class="n">user</span><span class="o">&gt;/</span><span class="n">nerfstudio</span><span class="o">/</span><span class="n">exports</span><span class="o">/</span><span class="n">gaussians</span> \
+  <span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="n">filename</span> <span class="n">plant</span><span class="o">.</span><span class="n">ply</span> \
+  <span class="o">--</span><span class="n">ply</span><span class="o">-</span><span class="n">color</span><span class="o">-</span><span class="n">mode</span> <span class="n">sh_coeffs</span>
+</pre></div>
+</div>
+<p>The last line represents the spherical harmonic coefficients, which are used to determine the color and shading of each point based on the current rendered view direction. This allows different perspectives of the same model to produce different lighting effects according to direction, enhancing the model’s realism and visual depth.</p>
+<p>The exported 3D model, as a .ply file, can be found under the <code class="docutils literal notranslate"><span class="pre">exports</span></code> folder in the <code class="docutils literal notranslate"><span class="pre">nerfstudio</span></code> directory.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>📂.../ 
+├──📂nerfstudio/ 
+│   ├──📂exports/
+│   │	├──📂gaussians/
+│   │	│	├── 📄 plant.ply
+│   │	│	│...
+│   │   │...
+│   │...
+│...
+</pre></div>
+</div>
+</section>
+<section id="rendering-in-unity">
+<h2>Rendering in Unity<a class="headerlink" href="#rendering-in-unity" title="Link to this heading">¶</a></h2>
+<p>The .ply file is then rendered in <a class="reference external" href="https://unity.com/">Unity Engine</a> using real-time visualization implemented in the <a class="reference external" href="https://github.com/aras-p/UnityGaussianSplatting">Gaussian Splatting playground in Unity</a> GitHub repository.</p>
+<p>Download and install <a class="reference external" href="https://unity.com/releases/editor/whats-new/2022.3.7">Unity 2022.3.7</a>. Other versions of Unity may also work, but the GitHub repository uses Unity 2022.3.</p>
+<p>Then, clone the repository:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">aras</span><span class="o">-</span><span class="n">p</span><span class="o">/</span><span class="n">UnityGaussianSplatting</span>
+</pre></div>
+</div>
+<p>In Unity, open the file <code class="docutils literal notranslate"><span class="pre">\projects\GaussianExample</span></code> and open <code class="docutils literal notranslate"><span class="pre">GSTestScene</span></code>.</p>
+<p>Navigate to <code class="docutils literal notranslate"><span class="pre">Tools</span> <span class="pre">&gt;</span> <span class="pre">Gaussian</span> <span class="pre">Splats</span> <span class="pre">&gt;</span> <span class="pre">Create</span> <span class="pre">GaussianSplatAsset</span></code>. This will open a new window:</p>
+<p><img alt="GaussianSplatAsset window." src="_images/unity.png" /></p>
+<p>Select the .ply file from the folder location shown above, and click <code class="docutils literal notranslate"><span class="pre">Create</span> <span class="pre">Asset</span></code>.</p>
+<p>In the Hierarchy tab, create an empty Game Object. Under its properties, click <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">Component</span></code>. Add <code class="docutils literal notranslate"><span class="pre">Gaussian</span> <span class="pre">Splat</span> <span class="pre">Renderer</span></code> and select the asset that was just created.</p>
+<p><img alt="Game Object in Unity." src="_images/gameobject.png" /></p>
+</section>
+</section>
+
+
+        </div>
+      </div>
+
+      <div id="side-menu-container">
+
+        <div id="search" role="search">
+        <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+            <input type="text" name="q" placeholder="Search..." />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+        </form>
+</div>
+
+        <div id="side-menu" role="navigation">
+
+          
+  
+    
+  
+  
+    <p class="caption" role="heading"><span class="caption-text">Navigation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#what-is-3d-gaussian-splatting">What is 3D Gaussian Splatting?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#dgs-pipeline-overview">3DGS Pipeline (Overview)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#hardware">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#installing-nerfstudio">Installing Nerfstudio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#data-preparation">Data Preparation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="segmentation.html">Masking</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="segmentation.html#installing-language-segment-anything">Installing Language Segment-Anything</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentation.html#masking-the-images">Masking the Images</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="training.html">Training</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="training.html#nerfstudio-viewer">Nerfstudio Viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html#output">Output</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Rendering the model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#export-the-gaussians">Export the Gaussians</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#rendering-in-unity">Rendering in Unity</a></li>
+</ul>
+</li>
+</ul>
+
+  
+
+
+        </div>
+
+        
+
+      </div>
+
+    </div>
+
+<footer>
+    <div id="footer-info">
+        <ul id="build-details">
+            
+                <li class="footer-element">
+                    
+                        <a href="_sources/rendering.md.txt" rel="nofollow"> source</a>
+                    
+                </li>
+            
+
+            
+
+            
+        </ul>
+
+        
+
+        <div id="credit">
+            created with <a href="http://sphinx-doc.org/">Sphinx</a> and <a href="https://github.com/Autophagy/insegel">Insegel</a>
+
+        </div>
+    </div>
+
+    <a id="menu-toggle" class="fa fa-bars" aria-hidden="true"></a>
+
+    <script type="text/javascript">
+      $("#menu-toggle").click(function() {
+        $("#menu-toggle").toggleClass("toggled");
+        $("#side-menu-container").slideToggle(300);
+      });
+    </script>
+
+</footer> 
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2D2D2D" />
+  
+  <title>3D Gaussian Splatting for Plant Reconstruction :: Training</title>
+  
+
+  <link rel="icon" type="image/png" sizes="32x32" href="_static/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="_static/img/favicon-16x16.png">
+  <link rel="index" title="Index" href="genindex.html"/>
+
+  <link rel="stylesheet" href="_static/css/insegel.css"/>
+  <link rel="stylesheet" href="_static/css/custom.css"/>
+
+  <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript" src="_static/documentation_options.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/sphinx_highlight.js"></script>
+      <script type="text/javascript" src="_static/clipboard.min.js"></script>
+      <script type="text/javascript" src="_static/copybutton.js"></script>
+  
+
+  <script src="https://email.tl.fortawesome.com/c/eJxNjUEOgyAQAF8jR7Kw6wIHDh7sP1Cw2mgxgmn6-3JsMqc5zEQfE8dkxOY1KKMUOI3ACFKRJpSW2AAp7ontYIaxI6i7XPJVwyeVfCQ550Os3jLrGSNOLgbdAy6s0PBk2TFNjEbsfq31LB0OnX407pJa5v2faRadwSW63mn5KuLyR9j2tgx3zecanl-55R_-jjPs"></script>
+   
+
+</head>
+
+<body>
+  <div id="insegel-container">
+    <header>
+      <div id="logo-container">
+          
+          <h1>3D Gaussian Splatting for Plant Reconstruction</h1>
+          
+      </div>
+      <div id="project-container">
+        
+        <h1>Documentation</h1>
+        
+      </div>
+    </header>
+
+    <div id="content-container">
+
+      <div id="main-content-container">
+        <div id="main-content" role="main">
+          
+  <section id="training">
+<h1>Training<a class="headerlink" href="#training" title="Link to this heading">¶</a></h1>
+<section id="nerfstudio-viewer">
+<h2>Nerfstudio Viewer<a class="headerlink" href="#nerfstudio-viewer" title="Link to this heading">¶</a></h2>
+<p>Now that we have the geometry of the scene from COLMAP and the segmentation masks, we can train the 3DGS model to optimize each Gaussian’s position, color, opacity, and scale.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">m</span> <span class="n">nerfstudio</span><span class="o">.</span><span class="n">scripts</span><span class="o">.</span><span class="n">train</span> <span class="n">splatfacto</span> \
+  <span class="o">--</span><span class="n">data</span> <span class="o">/</span><span class="n">home</span><span class="o">/&lt;</span><span class="n">user</span><span class="o">&gt;/</span><span class="n">nerfstudio</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">plant</span> \
+  <span class="o">--</span><span class="n">vis</span> <span class="n">viewer</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">masks</span></code> folder should be automatically detected by Nerfstudio. If not, include <code class="docutils literal notranslate"><span class="pre">--masks-path</span> <span class="pre">masks</span></code> in the command.</p>
+<p>Training can be monitored in real-time via Nerfstudio’s <a class="reference external" href="https://docs.nerf.studio/quickstart/viewer_quickstart.html">web-based viewer</a>. The above command will start a server and include the link in the terminal, it will typically look something like <code class="docutils literal notranslate"><span class="pre">http://localhost:7007</span></code>. Follow the link to visualize the training iterations.</p>
+</section>
+<section id="output">
+<h2>Output<a class="headerlink" href="#output" title="Link to this heading">¶</a></h2>
+<p>The trained model is saved to the following directory:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>📂.../
+├──📂nerfstudio/
+│   ├──📂outputs/
+│   │   ├──📂unnamed/
+│   │   │   ├──📂splatfacto/
+│   │   │   │   ├──📂&lt;timestamp&gt;/
+│   │   │   │   │   ├──📂nerfstudio_models/
+│   │   │   │   │   │   ├──📄 step-000029999.ckpt
+│   │   │   │   │   ├──📄 config.yml
+│   │   │   │   │   ├──📄 dataparser_transforms.json
+│   │   │   │   │   │...
+│   │   │   │   │...
+│   │   │   │...
+│   │   │...
+│   │...
+│...
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">step-000029999.ckpt</span></code> is a checkpoint file saved at the final training step (29999). This file contains all optimized Gaussian parameters, including:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">means</span></code> — 3D position of each Gaussian in the scene</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scales</span></code> — size of each Gaussian along each axis</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">quats</span></code> — rotation of each Gaussian</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">features_dc</span></code> — base color of each Gaussian</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">features_rest</span></code> — view-dependent color component</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">opacities</span></code> — opacity of each Gaussian</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">config.yml</span></code> contains the full training configuration, such as the hyperparameters used.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dataparser_transforms.json</span></code> contains the scene scale and orientation transforms applied during training.</p></li>
+</ul>
+</section>
+</section>
+
+
+        </div>
+      </div>
+
+      <div id="side-menu-container">
+
+        <div id="search" role="search">
+        <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+            <input type="text" name="q" placeholder="Search..." />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+        </form>
+</div>
+
+        <div id="side-menu" role="navigation">
+
+          
+  
+    
+  
+  
+    <p class="caption" role="heading"><span class="caption-text">Navigation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#what-is-3d-gaussian-splatting">What is 3D Gaussian Splatting?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#dgs-pipeline-overview">3DGS Pipeline (Overview)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#hardware">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#installing-nerfstudio">Installing Nerfstudio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#data-preparation">Data Preparation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="segmentation.html">Masking</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="segmentation.html#installing-language-segment-anything">Installing Language Segment-Anything</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentation.html#masking-the-images">Masking the Images</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Training</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#nerfstudio-viewer">Nerfstudio Viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#output">Output</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rendering.html">Rendering the model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html#export-the-gaussians">Export the Gaussians</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html#rendering-in-unity">Rendering in Unity</a></li>
+</ul>
+</li>
+</ul>
+
+  
+
+
+        </div>
+
+        
+
+      </div>
+
+    </div>
+
+<footer>
+    <div id="footer-info">
+        <ul id="build-details">
+            
+                <li class="footer-element">
+                    
+                        <a href="_sources/training.md.txt" rel="nofollow"> source</a>
+                    
+                </li>
+            
+
+            
+
+            
+        </ul>
+
+        
+
+        <div id="credit">
+            created with <a href="http://sphinx-doc.org/">Sphinx</a> and <a href="https://github.com/Autophagy/insegel">Insegel</a>
+
+        </div>
+    </div>
+
+    <a id="menu-toggle" class="fa fa-bars" aria-hidden="true"></a>
+
+    <script type="text/javascript">
+      $("#menu-toggle").click(function() {
+        $("#menu-toggle").toggleClass("toggled");
+        $("#side-menu-container").slideToggle(300);
+      });
+    </script>
+
+</footer> 
+
+</div>
+
+</body>
+</html>

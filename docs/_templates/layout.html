@@ -1,0 +1,30 @@
+{% extends "!layout.html" %}
+
+{% block extrahead %}
+  {{ super() }}
+{% endblock %}
+
+{% block body %}
+  {{ super() }}
+
+  <!-- GitHub Link in Top Right -->
+  <a href="https://github.com/christine-deng/nerfstudio" 
+     id="github-link" 
+     target="_blank" 
+     title="View this project on GitHub">
+    View on GitHub
+  </a>
+
+  <!-- Back to Top button -->
+  <a href="#" id="back-to-top" title="Back to Top">&#8679;</a>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const topBtn = document.getElementById("back-to-top");
+      topBtn.addEventListener("click", function (e) {
+        e.preventDefault();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#2D2D2D" />
+  
+  <title>3D Gaussian Splatting for Plant Reconstruction :: Setup</title>
+  
+
+  <link rel="icon" type="image/png" sizes="32x32" href="_static/img/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="_static/img/favicon-16x16.png">
+  <link rel="index" title="Index" href="genindex.html"/>
+
+  <link rel="stylesheet" href="_static/css/insegel.css"/>
+  <link rel="stylesheet" href="_static/css/custom.css"/>
+
+  <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+      <script type="text/javascript" src="_static/documentation_options.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+      <script type="text/javascript" src="_static/sphinx_highlight.js"></script>
+      <script type="text/javascript" src="_static/clipboard.min.js"></script>
+      <script type="text/javascript" src="_static/copybutton.js"></script>
+  
+
+  <script src="https://email.tl.fortawesome.com/c/eJxNjUEOgyAQAF8jR7Kw6wIHDh7sP1Cw2mgxgmn6-3JsMqc5zEQfE8dkxOY1KKMUOI3ACFKRJpSW2AAp7ontYIaxI6i7XPJVwyeVfCQ550Os3jLrGSNOLgbdAy6s0PBk2TFNjEbsfq31LB0OnX407pJa5v2faRadwSW63mn5KuLyR9j2tgx3zecanl-55R_-jjPs"></script>
+   
+
+</head>
+
+<body>
+  <div id="insegel-container">
+    <header>
+      <div id="logo-container">
+          
+          <h1>3D Gaussian Splatting for Plant Reconstruction</h1>
+          
+      </div>
+      <div id="project-container">
+        
+        <h1>Documentation</h1>
+        
+      </div>
+    </header>
+
+    <div id="content-container">
+
+      <div id="main-content-container">
+        <div id="main-content" role="main">
+          
+  <section id="setup">
+<h1>Setup<a class="headerlink" href="#setup" title="Link to this heading">¶</a></h1>
+<section id="hardware">
+<h2>Hardware<a class="headerlink" href="#hardware" title="Link to this heading">¶</a></h2>
+<p>All programs used in this project were run on a computer with the following specifications:</p>
+<ul class="simple">
+<li><p>PC: Alienware Aurora R16 (x64)</p></li>
+<li><p>Processor: Intel(R) Core(TM) i9-14900KF  3.20 GHz</p></li>
+<li><p>RAM: 64.0 GB</p></li>
+<li><p>GPU: NVIDIA GeForce RTX 4090</p></li>
+</ul>
+</section>
+<section id="installing-nerfstudio">
+<h2>Installing Nerfstudio<a class="headerlink" href="#installing-nerfstudio" title="Link to this heading">¶</a></h2>
+<p>Our project builds on <a class="reference external" href="https://docs.nerf.studio/nerfology/methods/splat.html">Splatfacto</a>, <a class="reference external" href="https://docs.nerf.studio/index.html">Nerfstudio</a>’s open-source Python implementation of 3DGS.</p>
+<p>Follow the <a class="reference external" href="https://docs.nerf.studio/quickstart/installation.html">installation guide</a> for your appropriate operating system. This project installed Nerfstudio using the Linux
+installation on WSL.</p>
+</section>
+<section id="data-preparation">
+<h2>Data Preparation<a class="headerlink" href="#data-preparation" title="Link to this heading">¶</a></h2>
+<p>Create a folder called <code class="docutils literal notranslate"><span class="pre">data</span></code> under the <code class="docutils literal notranslate"><span class="pre">nerfstudio</span></code> directory. In <code class="docutils literal notranslate"><span class="pre">data</span></code>, create a folder called <code class="docutils literal notranslate"><span class="pre">plant</span></code>, and a folder within <code class="docutils literal notranslate"><span class="pre">plant</span></code> named <code class="docutils literal notranslate"><span class="pre">source</span></code>.
+Add all raw images of the plant to be used in training in the <code class="docutils literal notranslate"><span class="pre">source</span></code> folder. The folder structure should look as such:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>📂.../ 
+├──📂nerfstudio/ 
+│   ├──📂data/
+│   │	├──📂plant/
+│   │	│	├──📂source/
+│   │	│	│	├── 🖼️ &lt;raw image 0&gt;
+│   │	│	│	├── 🖼️ &lt;raw image 1&gt;
+│   │	│	│	│...
+│   │   │...
+│   │...
+│...
+</pre></div>
+</div>
+<p>Nerfstudio has a <a class="reference external" href="https://docs.nerf.studio/quickstart/custom_dataset.html">built-in command</a> for processing images using <a class="reference external" href="https://colmap.github.io/">COLMAP</a>. COLMAP is a
+Structure from motion (SfM) algorithm, we utilize COLMAP to process the input images to estimate shared camera intrinsics and orientations per frame. The algorithm then matches correspondences between features across image pairs to generate a sparse 3D point cloud. This pre-existing geometry allows Gaussians to initialize at the positions of the points.</p>
+<p>Make sure COLMAP is installed with <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">install</span> <span class="pre">-c</span> <span class="pre">conda-forge</span> <span class="pre">colmap</span></code>.</p>
+<p>Enter the <code class="docutils literal notranslate"><span class="pre">plant</span></code> directory, and run Nerfstudio’s image processor.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">cd</span> <span class="o">/</span><span class="n">home</span><span class="o">/&lt;</span><span class="n">user</span><span class="o">&gt;/</span><span class="n">nerfstudio</span><span class="o">/</span><span class="n">data</span><span class="o">/</span><span class="n">plant</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">ns</span><span class="o">-</span><span class="n">process</span><span class="o">-</span><span class="n">data</span> <span class="n">images</span> <span class="o">--</span><span class="n">data</span> <span class="n">source</span> <span class="o">--</span><span class="n">output</span><span class="o">-</span><span class="nb">dir</span> <span class="o">.</span>
+</pre></div>
+</div>
+<p>The folder should now look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>📂.../ 
+├──📂nerfstudio/ 
+│   ├──📂data/
+│   │	├──📂plant/
+│   │	│	├──📂source/
+│   │	│	│	├── 🖼️ &lt;raw image 0&gt;
+│   │	│	│	├── 🖼️ &lt;raw image 1&gt;
+│   │	│	│	│...
+│   │	│	├──📂colmap/
+│   │	│	├──📂images/
+│   │	│	├──📂images_2/
+│   │	│	├──📂images_4/
+│   │	│	├──📂images_8/
+│   │	│	├──📄 sparse_pc.ply
+│   │	│	├──📄 transforms.json
+│   │   │...
+│   │...
+│...
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">colmap/</span></code> contains the raw SfM output, including camera poses and the sparse point cloud in COLMAP format.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sparse_pc.ply</span></code> is the sparse 3D point cloud visualized from the COLMAP reconstruction.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">transforms.json</span></code> contains camera intrinsic and extrinsic values in Nerfstudio format.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">images/</span></code> contains the processed source images in the correct orientation for training.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">images_2/</span></code>, <code class="docutils literal notranslate"><span class="pre">images_4/</span></code>, <code class="docutils literal notranslate"><span class="pre">images_8/</span></code> are downscaled versions of <code class="docutils literal notranslate"><span class="pre">images/</span></code> at 1/2, 1/4, and 1/8 resolution, respectively, used during training.</p></li>
+</ul>
+</section>
+</section>
+
+
+        </div>
+      </div>
+
+      <div id="side-menu-container">
+
+        <div id="search" role="search">
+        <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+            <input type="text" name="q" placeholder="Search..." />
+            <input type="hidden" name="check_keywords" value="yes" />
+            <input type="hidden" name="area" value="default" />
+        </form>
+</div>
+
+        <div id="side-menu" role="navigation">
+
+          
+  
+    
+  
+  
+    <p class="caption" role="heading"><span class="caption-text">Navigation:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#what-is-3d-gaussian-splatting">What is 3D Gaussian Splatting?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#dgs-pipeline-overview">3DGS Pipeline (Overview)</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Setup</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#hardware">Hardware</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-nerfstudio">Installing Nerfstudio</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-preparation">Data Preparation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="segmentation.html">Masking</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="segmentation.html#installing-language-segment-anything">Installing Language Segment-Anything</a></li>
+<li class="toctree-l2"><a class="reference internal" href="segmentation.html#masking-the-images">Masking the Images</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="training.html">Training</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="training.html#nerfstudio-viewer">Nerfstudio Viewer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="training.html#output">Output</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rendering.html">Rendering the model</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html#export-the-gaussians">Export the Gaussians</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rendering.html#rendering-in-unity">Rendering in Unity</a></li>
+</ul>
+</li>
+</ul>
+
+  
+
+
+        </div>
+
+        
+
+      </div>
+
+    </div>
+
+<footer>
+    <div id="footer-info">
+        <ul id="build-details">
+            
+                <li class="footer-element">
+                    
+                        <a href="_sources/setup.md.txt" rel="nofollow"> source</a>
+                    
+                </li>
+            
+
+            
+
+            
+        </ul>
+
+        
+
+        <div id="credit">
+            created with <a href="http://sphinx-doc.org/">Sphinx</a> and <a href="https://github.com/Autophagy/insegel">Insegel</a>
+
+        </div>
+    </div>
+
+    <a id="menu-toggle" class="fa fa-bars" aria-hidden="true"></a>
+
+    <script type="text/javascript">
+      $("#menu-toggle").click(function() {
+        $("#menu-toggle").toggleClass("toggled");
+        $("#side-menu-container").slideToggle(300);
+      });
+    </script>
+
+</footer> 
+
+</div>
+
+</body>
+</html>
